@@ -6,12 +6,21 @@
 package Interfaces;
 
 import beans.Usuarios;
+import java.util.Map;
 
 /**
  *
  * @author Jose Raimundo Montes Lopez
  */
 public interface UsuarioDAO {
+    
+    /**
+    * loguea un usuario
+    *
+    * @param usuario El usuario a loguear en la base de datos.
+    * @return boolean True si el logueo es correcto, False si no se pudo realizar.
+    */
+    public Map<String, String> logIn(Usuarios usuario);
     
     /**
     * Inserta un usuario en la abase de datos
