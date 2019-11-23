@@ -5,7 +5,9 @@
  */
 package DAOFactory;
 
+import Interfaces.EquipoDAO;
 import Interfaces.UsuarioDAO;
+import UsuarioDao.SqlDbEquipoImpl;
 import UsuarioDao.SqlDbUsuarioImpl;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -57,6 +59,11 @@ public class MySqlDbDAOFactory extends DAOFactory {
     @Override
     public UsuarioDAO getUsuarioDAO() {
         return new SqlDbUsuarioImpl();
+    }
+    
+    @Override
+    public EquipoDAO getEquipoDAO() {
+        return new SqlDbEquipoImpl();
     }
     
 }

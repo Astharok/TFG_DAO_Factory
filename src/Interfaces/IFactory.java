@@ -16,4 +16,11 @@ public interface IFactory {
     */
     public UsuarioDAO getUsuarioDAO();
     
+    /**
+    * Devuelve el DAO de equipos
+    *
+    * @return EquipoDAO - El DAO de equipos.
+    */
+    public EquipoDAO getEquipoDAO();
+    
 }
