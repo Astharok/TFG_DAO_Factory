@@ -23,4 +23,11 @@ public interface IFactory {
     */
     public EquipoDAO getEquipoDAO();
     
+    /**
+    * Devuelve el DAO de grupos
+    *
+    * @return GrupoDAO - El DAO de grupos.
+    */
+    public GrupoDAO getGrupoDAO();
+    
 }

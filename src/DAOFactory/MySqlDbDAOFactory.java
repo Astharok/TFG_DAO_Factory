@@ -6,8 +6,10 @@
 package DAOFactory;
 
 import Interfaces.EquipoDAO;
+import Interfaces.GrupoDAO;
 import Interfaces.UsuarioDAO;
 import UsuarioDao.SqlDbEquipoImpl;
+import UsuarioDao.SqlDbGrupoImpl;
 import UsuarioDao.SqlDbUsuarioImpl;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -64,6 +66,11 @@ public class MySqlDbDAOFactory extends DAOFactory {
     @Override
     public EquipoDAO getEquipoDAO() {
         return new SqlDbEquipoImpl();
+    }
+    
+    @Override
+    public GrupoDAO getGrupoDAO() {
+        return new SqlDbGrupoImpl();
     }
     
 }
