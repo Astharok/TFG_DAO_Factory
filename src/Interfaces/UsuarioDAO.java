@@ -5,7 +5,9 @@
  */
 package Interfaces;
 
+import beans.Recargas;
 import beans.Usuarios;
+import java.util.Map;
 
 /**
  *
@@ -14,11 +16,47 @@ import beans.Usuarios;
 public interface UsuarioDAO {
     
     /**
+    * loguea un usuario
+    *
+    * @param usuario El usuario a loguear en la base de datos.
+    * @return boolean True si el logueo es correcto, False si no se pudo realizar.
+    */
+    public Map<String, String> logIn(Usuarios usuario);
+    
+    /**
     * Inserta un usuario en la abase de datos
     *
     * @param usuario El usuario a instertar en la base de datos.
-    * @return boolean True si la insercion es correcta, False si no se pudo realizar la insercion.
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
-    public boolean insertarUsuario(Usuarios usuario);
+    public Map<String, String> insertarUsuario(Usuarios usuario);
+    
+    /**
+    * Recupera la lista de usuarios de la base de datos
+    *
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> loadAll();
+    
+    /**
+    * Modifica el saldo de un usuario
+    *
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> changeSaldo(Recargas recarga);
+    
+    /**
+    * Encuentra el usuario
+    *
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> find(Usuarios usuario);
+
+    /**
+    * Edita el usuario
+    *
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> editarUsuario(Usuarios usuario);
     
 }

@@ -6,6 +6,7 @@
 package DAOFactory;
 
 import Interfaces.IFactory;
+import Interfaces.SesionDAO;
 
 /**
  *
@@ -18,8 +19,6 @@ public abstract class DAOFactory implements IFactory{
     /**
     * Selecciona la base de datos con la que trabajar
     * DAOFactory.MY_SQL
-    * DAOFactory.ORACLE
-    * DAOFactory.NEODATIS
     *
     * @param db Parametro de seleccion de base de datos.
     * @return DAOFactory La factoria de base de datos seleccionada.

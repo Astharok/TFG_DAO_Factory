@@ -5,7 +5,17 @@
  */
 package DAOFactory;
 
+import Interfaces.ConversacionDAO;
+import Interfaces.EquipoDAO;
+import Interfaces.GrupoDAO;
+import Interfaces.MensajeDAO;
+import Interfaces.SesionDAO;
 import Interfaces.UsuarioDAO;
+import UsuarioDao.SqlDbConversacionImpl;
+import UsuarioDao.SqlDbEquipoImpl;
+import UsuarioDao.SqlDbGrupoImpl;
+import UsuarioDao.SqlDbMensajeImpl;
+import UsuarioDao.SqlDbSesionImpl;
 import UsuarioDao.SqlDbUsuarioImpl;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -57,6 +67,31 @@ public class MySqlDbDAOFactory extends DAOFactory {
     @Override
     public UsuarioDAO getUsuarioDAO() {
         return new SqlDbUsuarioImpl();
+    }
+
+    @Override
+    public EquipoDAO getEquipoDAO() {
+        return new SqlDbEquipoImpl();
+    }
+
+    @Override
+    public GrupoDAO getGrupoDAO() {
+        return new SqlDbGrupoImpl();
+    }
+
+    @Override
+    public MensajeDAO getMensajeDAO() {
+        return new SqlDbMensajeImpl();
+    }
+
+    @Override
+    public SesionDAO getSesionDAO() {
+        return new SqlDbSesionImpl();
+    }
+
+    @Override
+    public ConversacionDAO getConversacionDAO() {
+        return new SqlDbConversacionImpl();
     }
     
 }

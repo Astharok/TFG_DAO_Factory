@@ -16,4 +16,39 @@ public interface IFactory {
     */
     public UsuarioDAO getUsuarioDAO();
     
+    /**
+    * Devuelve el DAO de equipos
+    *
+    * @return EquipoDAO - El DAO de equipos.
+    */
+    public EquipoDAO getEquipoDAO();
+    
+    /**
+    * Devuelve el DAO de grupos
+    *
+    * @return GrupoDAO - El DAO de grupos.
+    */
+    public GrupoDAO getGrupoDAO();
+    
+    /**
+    * Devuelve el DAO de mensajes
+    *
+    * @return GrupoDAO - El DAO de grupos.
+    */
+    public MensajeDAO getMensajeDAO();
+    
+    /**
+    * Devuelve el DAO de sesiones
+    *
+    * @return GrupoDAO - El DAO de grupos.
+    */
+    public SesionDAO getSesionDAO();
+    
+    /**
+    * Devuelve el DAO de conversaciones
+    *
+    * @return GrupoDAO - El DAO de grupos.
+    */
+    public ConversacionDAO getConversacionDAO();
+    
 }
