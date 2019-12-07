@@ -9,6 +9,7 @@ import DAOFactory.MySqlDbDAOFactory;
 import Interfaces.UsuarioDAO;
 import beans.GruposUsuarios;
 import beans.Recargas;
+import beans.Tarifas;
 import beans.Usuarios;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -30,7 +31,9 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
 
     private final String SQL_LOG_IN = "{? = CALL login(?, ?)}";
     
-    private final String SQL_CHANGE_SALDO = "{? = CALL changesaldo(?, ?, ?)}";
+    //private final String SQL_CHANGE_SALDO = "{? = CALL changesaldo(?, ?, ?)}";
+    private final String SQL_CHANGE_SALDO = "INSERT Into recargas (Fecha, Cantidad, Notas, ID_Usuario_FK) "
+            + "VALUES (CURRENT_TIMESTAMP(), ?, ?, ?)";
 
     private final String SQL_ADD = "INSERT INTO Usuarios (Nombre, Apellido, Apodo, Password, Email, Telefono, ID_Grupo_Usuario_FK) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -41,14 +44,18 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
     
     private final String SQL_LOAD_USUARIOS = "SELECT ID_Usuario, Apodo, Nombre, Apellido, Email, Telefono, Saldo FROM Usuarios";
     
-    private final String SQL_FIND_USUARIO = "SELECT u.ID_Usuario, u.Nombre, u.Apellido, u.Apodo, u.Email, u.Telefono, "
-            + "g.Nombre "
+    private final String SQL_FIND_USUARIO = "SELECT u.ID_Usuario, u.Nombre, u.Apellido, u.Apodo, u.Email, u.Telefono, u.Saldo, "
+            + "g.Nombre, "
+            + "t.Precio_por_hora "
             + "FROM Usuarios u "
             + "INNER JOIN "
             + "grupos_usuarios g "
+            + "INNER JOIN "
+            + "tarifas t "
             + "WHERE u.ID_Usuario = ? "
             + "AND "
-            + "u.ID_Grupo_Usuario_FK = g.ID_Grupo_Usuarios";
+            + "u.ID_Grupo_Usuario_FK = g.ID_Grupo_Usuarios "
+            + "AND t.ID_Tarifa = g.ID_Tarifa_FK";
 
     Connection conexion;
 
@@ -59,7 +66,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
 
     @Override
     public Map<String, String> logIn(Usuarios usuario) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         CallableStatement sentencia;
 
@@ -71,7 +78,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             sentencia.setString(2, usuario.getApodo());
             sentencia.setString(3, usuario.getPassword());
 
-            Boolean res = sentencia.execute();
+            sentencia.execute();
 
             String resultadoString = sentencia.getString(1);
 
@@ -80,8 +87,22 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             if (resultadoMap.get("LOGUED_STATUS").equals("SUCCESS")) {
                 results.put("STATE", resultadoMap.get("LOGUED_STATUS"));
                 results.put("MESSAGE", "Usuario Logueado");
-                results.put("APODO", usuario.getApodo());
-                results.put("GROUP_NAME", resultadoMap.get("GROUP_NAME"));
+                
+                GruposUsuarios grupo = new GruposUsuarios();
+                grupo.setNombre(resultadoMap.get("GROUP_NAME"));
+                
+                Usuarios usuarioLogueado = new Usuarios();
+                
+                usuarioLogueado.setIDUsuario(Double.valueOf(String.valueOf(resultadoMap.get("ID_USUARIO"))).intValue());
+                usuarioLogueado.setNombre(resultadoMap.get("NOMBRE"));
+                usuarioLogueado.setApellido(resultadoMap.get("APELLIDO"));
+                usuarioLogueado.setApodo(resultadoMap.get("APODO"));
+                usuarioLogueado.setEmail(resultadoMap.get("EMAIL"));
+                usuarioLogueado.setTelefono(resultadoMap.get("TELEFONO"));
+                usuarioLogueado.setSaldo(Double.valueOf(String.valueOf(resultadoMap.get("SALDO"))));
+                usuarioLogueado.setIDGrupoUsuarioFK(grupo);
+                
+                results.put("LOGUED_USER", Util.toJson(usuarioLogueado));
                 results.put("SESSION_ID", String.valueOf(resultadoMap.get("SESSION_ID")));
             } else {
                 results.put("STATE", "FAILURE");
@@ -102,7 +123,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
 
     @Override
     public Map<String, String> insertarUsuario(Usuarios usuario) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         PreparedStatement sentencia;
 
@@ -190,8 +211,8 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
 
         return results;
     }
-
-    @Override
+    
+    /*@Override
     public Map<String, String> changeSaldo(Recargas recarga) {
         Map<String, String> results = new HashMap<String, String>();
 
@@ -228,6 +249,39 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
         }
 
         return results;
+    }*/
+
+    @Override
+    public Map<String, String> changeSaldo(Recargas recarga) {
+        Map<String, String> results = new HashMap<>();
+
+        PreparedStatement sentencia;
+
+        try {
+            sentencia = conexion.prepareStatement(SQL_CHANGE_SALDO);
+            
+            sentencia.setDouble(1, recarga.getCantidad());
+            sentencia.setString(2, recarga.getNotas());
+            sentencia.setInt(3, recarga.getIDUsuarioFK().getIDUsuario());
+
+            Integer filas = sentencia.executeUpdate();
+            
+            if (filas > 0) {
+                results.put("STATE", "SUCCESS");
+                results.put("MESSAGE", "Saldo modificado");
+            } else {
+                results.put("STATE", "FAILURE");
+                results.put("MESSAGE", "No se pudo modificar el saldo");
+            }
+
+            sentencia.close();
+        } catch (SQLException ex) {
+            results.put("STATE", "EXCEPTION");
+            results.put("MESSAGE", "No se pudo modificar el saldo");
+            results.put("EXCEPTION_MESSAGE", ex.getMessage());
+        }
+
+        return results;
     }
 
     @Override
@@ -247,8 +301,12 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
                 results.put("STATE", "SUCCESS");
                 results.put("MESSAGE", "Usuario encontrado");
                 
+                Tarifas tarifa = new Tarifas();
+                tarifa.setPrecioporhora(resultado.getDouble("t.Precio_por_hora"));
+                
                 GruposUsuarios grupo = new GruposUsuarios();
                 grupo.setNombre(resultado.getString("g.Nombre"));
+                grupo.setIDTarifaFK(tarifa);
                 
                 Usuarios foundUser = new Usuarios();
                 foundUser.setIDUsuario(resultado.getInt("u.ID_Usuario"));
@@ -257,6 +315,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
                 foundUser.setNombre(resultado.getString("u.Nombre"));
                 foundUser.setApellido(resultado.getString("u.Apellido"));
                 foundUser.setTelefono(resultado.getString("u.Telefono"));
+                foundUser.setSaldo(resultado.getDouble("u.Saldo"));
                 foundUser.setIDGrupoUsuarioFK(grupo);
                 
                 results.put("USUARIO", Util.toJson(foundUser));
@@ -277,7 +336,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
 
     @Override
     public Map<String, String> editarUsuario(Usuarios usuario) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         PreparedStatement sentencia;
 

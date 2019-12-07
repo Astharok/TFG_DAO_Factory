@@ -28,8 +28,8 @@ import util.Util;
  */
 public class SqlDbMensajeImpl implements MensajeDAO {
 
-    private final String SQL_ADD = "INSERT INTO Mensajes (Texto_Mensaje, ID_Conversacion_FK, ID_Usuario_FK) "
-            + "VALUES (?, ?, ?)";
+    private final String SQL_ADD = "INSERT INTO Mensajes (Texto_Mensaje, Fecha, ID_Conversacion_FK, ID_Usuario_FK) "
+            + "VALUES (?, CURRENT_TIMESTAMP(), ?, ?)";
 
     private final String SQL_FIND_MENSAJES_CONVERSACION = "SELECT Texto_Mensaje, Fecha, ID_Usuario_FK FROM Mensajes WHERE ID_Conversacion_FK = ?;";
 
