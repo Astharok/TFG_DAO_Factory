@@ -11,11 +11,9 @@ import beans.Conversaciones;
 import beans.Mensajes;
 import beans.Usuarios;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +26,8 @@ import util.Util;
  */
 public class SqlDbMensajeImpl implements MensajeDAO {
 
-    private final String SQL_ADD = "INSERT INTO Mensajes (Texto_Mensaje, ID_Conversacion_FK, ID_Usuario_FK) "
-            + "VALUES (?, ?, ?)";
+    private final String SQL_ADD = "INSERT INTO Mensajes (Texto_Mensaje, Fecha, ID_Conversacion_FK, ID_Usuario_FK) "
+            + "VALUES (?, CURRENT_TIMESTAMP(), ?, ?)";
 
     private final String SQL_FIND_MENSAJES_CONVERSACION = "SELECT Texto_Mensaje, Fecha, ID_Usuario_FK FROM Mensajes WHERE ID_Conversacion_FK = ?;";
 
@@ -42,7 +40,7 @@ public class SqlDbMensajeImpl implements MensajeDAO {
 
     @Override
     public Map<String, String> insert(Mensajes mensaje) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         PreparedStatement sentencia;
 
@@ -89,10 +87,10 @@ public class SqlDbMensajeImpl implements MensajeDAO {
             if (resultado.first()) {
                 results.put("STATE", "SUCCESS");
                 results.put("MESSAGE", "Mensajes encontrados");
-                List<Mensajes> mensajes = new ArrayList<Mensajes>();
+                List<Mensajes> mensajes = new ArrayList<>();
 
-                Mensajes mensaje = new Mensajes();
-                Usuarios usuario = new Usuarios();
+                Mensajes mensaje;
+                Usuarios usuario;
 
                 mensaje = new Mensajes();
                 usuario = new Usuarios();

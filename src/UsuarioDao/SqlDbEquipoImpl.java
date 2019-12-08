@@ -8,6 +8,8 @@ package UsuarioDao;
 import DAOFactory.MySqlDbDAOFactory;
 import Interfaces.EquipoDAO;
 import beans.Equipos;
+import beans.HistorialesEquipos;
+import beans.Usuarios;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +26,21 @@ import util.Util;
  */
 public class SqlDbEquipoImpl implements EquipoDAO {
 
-    private final String SQL_LOAD_EQUIPOS = "SELECT Nombre FROM equipos";
-
+    private final String SQL_LOAD_EQUIPOS = "SELECT eq.ID_Equipo, eq.Nombre, hi.ID_Historial_Equipo, hi.Fecha_Inicio, us.ID_Usuario, us.Apodo "
+            + "FROM equipos eq "
+            + "LEFT JOIN historiales_equipos hi "
+            + "ON (eq.ID_Equipo = hi.ID_Equipo_FK AND hi.Fecha_FIN IS NULL) "
+            + "LEFT JOIN Usuarios us "
+            + "ON (us.ID_usuario = hi.ID_Usuario_FK) "
+            + "ORDER BY eq.ID_Equipo";
+    
+        private final String SQL_ACTIVAR = "INSERT INTO historiales_equipos (Fecha_Inicio, ID_Usuario_FK, ID_Equipo_FK) "
+            + "VALUES (CURRENT_TIMESTAMP(), ?, ?)";
+        
+        private final String SQL_DESACTIVAR = "UPDATE historiales_equipos SET "
+        + "Fecha_Fin = CURRENT_TIMESTAMP()"
+        + "WHERE ID_Historial_Equipo = ?";
+        
     Connection conexion;
 
     public SqlDbEquipoImpl() {
@@ -50,12 +65,24 @@ public class SqlDbEquipoImpl implements EquipoDAO {
             List<Equipos> resEquipos = new ArrayList<>();
 
             while (filas.next()) {
-                String nombre = filas.getString("Nombre");
+                Usuarios usuario = new Usuarios();
+                usuario.setIDUsuario(filas.getInt("ID_Usuario"));
+                usuario.setNombre(filas.getString("Apodo"));
                 
-                //Assuming you have a user object
+                List<HistorialesEquipos> historiales = new ArrayList<>();
+                
+                HistorialesEquipos historial = new HistorialesEquipos();
+                historial.setIDHistorialEquipo(filas.getInt("ID_Historial_Equipo"));
+                historial.setFechaInicio(filas.getTimestamp("Fecha_Inicio"));
+                historial.setIDUsuarioFK(usuario);
+                
+                historiales.add(historial);
+                        
                 Equipos equipo = new Equipos();
                 
-                equipo.setNombre(nombre);
+                equipo.setIDEquipo(filas.getInt("ID_Equipo"));
+                equipo.setNombre(filas.getString("Nombre"));
+                equipo.setHistorialesEquiposCollection(historiales);
                 
                 resEquipos.add(equipo);
             }
@@ -66,6 +93,69 @@ public class SqlDbEquipoImpl implements EquipoDAO {
         } catch (SQLException ex) {
             results.put("STATE", "EXCEPTION");
             results.put("MESSAGE", "No se pudo obtener la lista de equipos");
+            results.put("EXCEPTION_MESSAGE", ex.getMessage());
+        }
+
+        return results;
+    }
+
+    @Override
+    public Map<String, String> activar(Equipos equipo, Usuarios usuario) {
+        Map<String, String> results = new HashMap<>();
+
+        PreparedStatement sentencia;
+
+        try {
+            sentencia = conexion.prepareStatement(SQL_ACTIVAR);
+            
+            sentencia.setInt(1, usuario.getIDUsuario());
+            sentencia.setInt(2, equipo.getIDEquipo());
+
+            Integer filas = sentencia.executeUpdate();
+            
+            if (filas > 0) {
+                results.put("STATE", "SUCCESS");
+                results.put("MESSAGE", "Equipo activado");
+            } else {
+                results.put("STATE", "FAILURE");
+                results.put("MESSAGE", "Equipo no se pudo activar");
+            }
+
+            sentencia.close();
+        } catch (SQLException ex) {
+            results.put("STATE", "EXCEPTION");
+            results.put("MESSAGE", "MESSAGE no se pudo activar");
+            results.put("EXCEPTION_MESSAGE", ex.getMessage());
+        }
+
+        return results;
+    }
+
+    @Override
+    public Map<String, String> desactivar(HistorialesEquipos historial) {
+        Map<String, String> results = new HashMap<>();
+
+        PreparedStatement sentencia;
+
+        try {
+            sentencia = conexion.prepareStatement(SQL_DESACTIVAR);
+            
+            sentencia.setInt(1, historial.getIDHistorialEquipo());
+
+            Integer filas = sentencia.executeUpdate();
+            
+            if (filas > 0) {
+                results.put("STATE", "SUCCESS");
+                results.put("MESSAGE", "Equipo desactivado");
+            } else {
+                results.put("STATE", "FAILURE");
+                results.put("MESSAGE", "Equipo no se pudo desactivar");
+            }
+
+            sentencia.close();
+        } catch (SQLException ex) {
+            results.put("STATE", "EXCEPTION");
+            results.put("MESSAGE", "Equipo no se pudo desactivar");
             results.put("EXCEPTION_MESSAGE", ex.getMessage());
         }
 
