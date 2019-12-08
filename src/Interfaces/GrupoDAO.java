@@ -17,6 +17,7 @@ public interface GrupoDAO {
     /**
     * Recupera el grupo de la base de datos
     *
+     * @param grupo
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> find(GruposUsuarios grupo);

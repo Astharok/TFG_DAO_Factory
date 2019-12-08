@@ -17,6 +17,8 @@ public interface ConversacionDAO {
     /**
     * Encuentra la conversacion
     *
+     * @param usuarioA
+     * @param usuarioB
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> find(Usuarios usuarioA, Usuarios usuarioB);

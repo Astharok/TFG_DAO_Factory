@@ -51,9 +51,7 @@ public class MySqlDbDAOFactory extends DAOFactory {
             //SELECCION DE DB, USER Y PASS Y ESTABLECER CONEXION
             conexion = DriverManager.getConnection(URL, USER, PASS);
             
-            System.out.println(DATABASE + "_SUCCESS: " + DB.toUpperCase() + " - Conexión a base de datos establecida");
         } catch (SQLException e) {
-            System.err.println(DATABASE + "_FAILURE: " + DB.toUpperCase() + " - Conexión a base de datos fallida");
             System.err.println(e.getSQLState());
             System.err.println(e.getMessage());
         } catch (ClassNotFoundException e) {

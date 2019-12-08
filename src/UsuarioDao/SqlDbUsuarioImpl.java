@@ -211,45 +211,6 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
 
         return results;
     }
-    
-    /*@Override
-    public Map<String, String> changeSaldo(Recargas recarga) {
-        Map<String, String> results = new HashMap<String, String>();
-
-        CallableStatement sentencia;
-
-        try {
-            sentencia = conexion.prepareCall(SQL_CHANGE_SALDO);
-
-            sentencia.registerOutParameter(1, Types.VARCHAR);
-
-            sentencia.setInt(2, recarga.getIDUsuarioFK().getIDUsuario());
-            sentencia.setDouble(3, recarga.getCantidad());
-            sentencia.setString(4, recarga.getNotas());
-
-            Boolean res = sentencia.execute();
-
-            String resultadoString = sentencia.getString(1);
-
-            Map<String, String> resultadoMap = Util.fromJson(resultadoString);
-
-            if (resultadoMap.get("REQUEST_STATUS").equals("SUCCESS")) {
-                results.put("STATE", "SUCCESS");
-                results.put("MESSAGE", "Saldo modificado");
-            } else {
-                results.put("STATE", "FAILURE");
-                results.put("MESSAGE", "No se pudo modificar el saldo");
-            }
-
-            sentencia.close();
-        } catch (SQLException ex) {
-            results.put("STATE", "EXCEPTION");
-            results.put("MESSAGE", "No se pudo modificar el saldo");
-            results.put("EXCEPTION_MESSAGE", ex.getMessage());
-        }
-
-        return results;
-    }*/
 
     @Override
     public Map<String, String> changeSaldo(Recargas recarga) {

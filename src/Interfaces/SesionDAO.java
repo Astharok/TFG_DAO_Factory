@@ -17,6 +17,7 @@ public interface SesionDAO {
     /**
     * Encuentra la sesion
     *
+     * @param sesion
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> find(Sesiones sesion);

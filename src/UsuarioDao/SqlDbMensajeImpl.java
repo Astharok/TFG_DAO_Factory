@@ -11,11 +11,9 @@ import beans.Conversaciones;
 import beans.Mensajes;
 import beans.Usuarios;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +40,7 @@ public class SqlDbMensajeImpl implements MensajeDAO {
 
     @Override
     public Map<String, String> insert(Mensajes mensaje) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         PreparedStatement sentencia;
 
@@ -89,10 +87,10 @@ public class SqlDbMensajeImpl implements MensajeDAO {
             if (resultado.first()) {
                 results.put("STATE", "SUCCESS");
                 results.put("MESSAGE", "Mensajes encontrados");
-                List<Mensajes> mensajes = new ArrayList<Mensajes>();
+                List<Mensajes> mensajes = new ArrayList<>();
 
-                Mensajes mensaje = new Mensajes();
-                Usuarios usuario = new Usuarios();
+                Mensajes mensaje;
+                Usuarios usuario;
 
                 mensaje = new Mensajes();
                 usuario = new Usuarios();

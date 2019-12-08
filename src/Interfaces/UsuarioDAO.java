@@ -41,6 +41,7 @@ public interface UsuarioDAO {
     /**
     * Modifica el saldo de un usuario
     *
+     * @param recarga
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> changeSaldo(Recargas recarga);
@@ -48,6 +49,7 @@ public interface UsuarioDAO {
     /**
     * Encuentra el usuario
     *
+     * @param usuario
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> find(Usuarios usuario);
@@ -55,6 +57,7 @@ public interface UsuarioDAO {
     /**
     * Edita el usuario
     *
+     * @param usuario
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> editarUsuario(Usuarios usuario);

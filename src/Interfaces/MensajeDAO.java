@@ -18,6 +18,7 @@ public interface MensajeDAO {
     /**
     * Inserta el mensaje
     *
+     * @param mensaje
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> insert(Mensajes mensaje);
@@ -25,6 +26,7 @@ public interface MensajeDAO {
     /**
     * Recuperas los mensajes de la conversacion
     *
+     * @param conversacion
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> findByConversacion(Conversaciones conversacion);

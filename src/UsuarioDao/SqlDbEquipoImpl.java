@@ -133,7 +133,7 @@ public class SqlDbEquipoImpl implements EquipoDAO {
 
     @Override
     public Map<String, String> desactivar(HistorialesEquipos historial) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         PreparedStatement sentencia;
 
