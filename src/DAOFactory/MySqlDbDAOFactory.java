@@ -5,12 +5,14 @@
  */
 package DAOFactory;
 
+import Interfaces.AvisoDAO;
 import Interfaces.ConversacionDAO;
 import Interfaces.EquipoDAO;
 import Interfaces.GrupoDAO;
 import Interfaces.MensajeDAO;
 import Interfaces.SesionDAO;
 import Interfaces.UsuarioDAO;
+import UsuarioDao.SqlDbAvisoImpl;
 import UsuarioDao.SqlDbConversacionImpl;
 import UsuarioDao.SqlDbEquipoImpl;
 import UsuarioDao.SqlDbGrupoImpl;
@@ -90,6 +92,11 @@ public class MySqlDbDAOFactory extends DAOFactory {
     @Override
     public ConversacionDAO getConversacionDAO() {
         return new SqlDbConversacionImpl();
+    }
+    
+    @Override
+    public AvisoDAO getAvisoDAO() {
+        return new SqlDbAvisoImpl();
     }
     
 }

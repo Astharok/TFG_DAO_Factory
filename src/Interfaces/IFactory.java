@@ -51,4 +51,11 @@ public interface IFactory {
     */
     public ConversacionDAO getConversacionDAO();
     
+    /**
+    * Devuelve el DAO de avisos
+    *
+    * @return AvisoDAO - El DAO de avisos.
+    */
+    public AvisoDAO getAvisoDAO();
+    
 }

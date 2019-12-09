@@ -6,6 +6,7 @@
 package Interfaces;
 
 import beans.GruposUsuarios;
+import beans.Tarifas;
 import java.util.Map;
 
 /**
@@ -21,5 +22,21 @@ public interface GrupoDAO {
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
     public Map<String, String> find(GruposUsuarios grupo);
+
+    /**
+    * Recupera todos los grupos de la base de datos
+    *
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> findall();
+
+    /**
+    * Actualiza la tarifa de un grupo en la base de datos
+    *
+     * @param grupo
+     * @param tarifa
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> updateTarifa(GruposUsuarios grupo, Tarifas tarifa);
     
 }
