@@ -29,7 +29,7 @@ public class SqlDbMensajeImpl implements MensajeDAO {
     private final String SQL_ADD = "INSERT INTO Mensajes (Texto_Mensaje, Fecha, ID_Conversacion_FK, ID_Usuario_FK) "
             + "VALUES (?, CURRENT_TIMESTAMP(), ?, ?)";
 
-    private final String SQL_FIND_MENSAJES_CONVERSACION = "SELECT Texto_Mensaje, Fecha, ID_Usuario_FK FROM Mensajes WHERE ID_Conversacion_FK = ?;";
+    private final String SQL_FIND_MENSAJES_CONVERSACION = "SELECT Texto_Mensaje, Fecha, ID_Conversacion_FK, ID_Usuario_FK FROM Mensajes WHERE ID_Conversacion_FK = ?;";
 
     Connection conexion;
 
@@ -87,6 +87,7 @@ public class SqlDbMensajeImpl implements MensajeDAO {
             if (resultado.first()) {
                 results.put("STATE", "SUCCESS");
                 results.put("MESSAGE", "Mensajes encontrados");
+                results.put("IDCONVERSACION", String.valueOf(resultado.getInt("ID_Conversacion_FK")));
                 List<Mensajes> mensajes = new ArrayList<>();
 
                 Mensajes mensaje;

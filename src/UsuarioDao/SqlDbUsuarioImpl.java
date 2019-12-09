@@ -42,6 +42,10 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             + "Nombre = ?, Apellido = ?, Apodo = ?, Password = ?, Email = ?, Telefono = ?, ID_Grupo_Usuario_FK = ? "
             + "WHERE ID_Usuario = ?";
     
+    private final String SQL_EDIT_OWN = "UPDATE Usuarios SET "
+            + "Nombre = ?, Apellido = ?, Apodo = ?, Password = ?, Email = ?, Telefono = ? "
+            + "WHERE ID_Usuario = ?";
+    
     private final String SQL_LOAD_USUARIOS = "SELECT ID_Usuario, Apodo, Nombre, Apellido, Email, Telefono, Saldo FROM Usuarios";
     
     private final String SQL_FIND_USUARIO = "SELECT u.ID_Usuario, u.Nombre, u.Apellido, u.Apodo, u.Email, u.Telefono, u.Saldo, "
@@ -302,7 +306,11 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
         PreparedStatement sentencia;
 
         try {
-            sentencia = conexion.prepareStatement(SQL_EDIT);
+            if(usuario.getIDGrupoUsuarioFK().getIDGrupoUsuarios() != null){
+                sentencia = conexion.prepareStatement(SQL_EDIT);
+            }else{
+                sentencia = conexion.prepareStatement(SQL_EDIT_OWN);
+            }
             
             sentencia.setString(1, usuario.getNombre());
             sentencia.setString(2, usuario.getApellido());
@@ -310,8 +318,12 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             sentencia.setString(4, usuario.getPassword());
             sentencia.setString(5, usuario.getEmail());
             sentencia.setString(6, usuario.getTelefono());
-            sentencia.setInt(7, usuario.getIDGrupoUsuarioFK().getIDGrupoUsuarios());
-            sentencia.setInt(8, usuario.getIDUsuario());
+            if(usuario.getIDGrupoUsuarioFK().getIDGrupoUsuarios() != null){
+                sentencia.setInt(7, usuario.getIDGrupoUsuarioFK().getIDGrupoUsuarios());
+                sentencia.setInt(8, usuario.getIDUsuario());
+            }else{
+                sentencia.setInt(7, usuario.getIDUsuario());
+            }
 
             Integer filas = sentencia.executeUpdate();
             
