@@ -46,10 +46,15 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             + "Nombre = ?, Apellido = ?, Apodo = ?, Password = ?, Email = ?, Telefono = ? "
             + "WHERE ID_Usuario = ?";
     
-    private final String SQL_LOAD_USUARIOS = "SELECT ID_Usuario, Apodo, Nombre, Apellido, Email, Telefono, Saldo FROM Usuarios";
+    private final String SQL_LOAD_USUARIOS = "SELECT u.ID_Usuario, u.Nombre, u.Apellido, u.Apodo, u.Email, u.Telefono, u.Saldo, "
+            + "g.ID_Grupo_Usuarios, g.Nombre "
+            + "FROM Usuarios u "
+            + "LEFT JOIN grupos_usuarios g "
+            + "ON (u.ID_Grupo_Usuario_FK = g.ID_Grupo_Usuarios) "
+            + "ORDER BY g.ID_Grupo_Usuarios, u.ID_Usuario;";
     
     private final String SQL_FIND_USUARIO = "SELECT u.ID_Usuario, u.Nombre, u.Apellido, u.Apodo, u.Email, u.Telefono, u.Saldo, "
-            + "g.Nombre, "
+            + "g.ID_Grupo_Usuarios, g.Nombre, "
             + "t.Precio_por_hora "
             + "FROM Usuarios u "
             + "INNER JOIN "
@@ -60,6 +65,8 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             + "AND "
             + "u.ID_Grupo_Usuario_FK = g.ID_Grupo_Usuarios "
             + "AND t.ID_Tarifa = g.ID_Tarifa_FK";
+    
+    private final String SQL_DELETE = "DELETE FROM Usuarios WHERE ID_Usuario = ?";
 
     Connection conexion;
 
@@ -147,18 +154,15 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             if (filas > 0) {
                 results.put("STATE", "SUCCESS");
                 results.put("MESSAGE", "Usuario Registrado");
-                results.put("APODO", usuario.getApodo());
             } else {
                 results.put("STATE", "FAILURE");
                 results.put("MESSAGE", "Usuario no se pudo registrar");
-                results.put("APODO", usuario.getApodo());
             }
 
             sentencia.close();
         } catch (SQLException ex) {
             results.put("STATE", "EXCEPTION");
             results.put("MESSAGE", "Usuario no se pudo registrar");
-            results.put("APODO", usuario.getApodo());
             results.put("EXCEPTION_MESSAGE", ex.getMessage());
         }
 
@@ -180,26 +184,29 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             results.put("MESSAGE", "Usuarios recuperados");
             
             List<Usuarios> resUsuarios = new ArrayList<>();
+            
+            /*private final String SQL_LOAD_USUARIOS = "SELECT u.ID_Usuario, u.Nombre, u.Apellido, u.Apodo, u.Email, u.Telefono, u.Saldo, "
+            + "g.ID_Grupo_Usuarios, g.Nombre "
+            + "FROM Usuarios u "
+            + "LEFT JOIN grupos_usuarios g "
+            + "ON (u.ID_Grupo_Usuario_FK = g.ID_Grupo_Usuarios);";*/
 
             while (filas.next()) {
-                Integer id = filas.getInt("ID_Usuario");
-                String apodo = filas.getString("Apodo");
-                String nombre = filas.getString("Nombre");
-                String apellido = filas.getString("Apellido");
-                String email = filas.getString("Email");
-                String telefono = filas.getString("Telefono");
-                Double saldo = filas.getDouble("Saldo");
                 
-                //Assuming you have a user object
+                GruposUsuarios grupo = new GruposUsuarios();
+                grupo.setIDGrupoUsuarios(filas.getInt("g.ID_Grupo_Usuarios"));
+                grupo.setNombre(filas.getString("g.Nombre"));
+                
                 Usuarios usuario = new Usuarios();
                 
-                usuario.setIDUsuario(id);
-                usuario.setApodo(apodo);
-                usuario.setNombre(nombre);
-                usuario.setApellido(apellido);
-                usuario.setEmail(email);
-                usuario.setTelefono(telefono);
-                usuario.setSaldo(saldo);
+                usuario.setIDUsuario(filas.getInt("u.ID_Usuario"));
+                usuario.setApodo(filas.getString("u.Apodo"));
+                usuario.setNombre(filas.getString("u.Nombre"));
+                usuario.setApellido(filas.getString("u.Apellido"));
+                usuario.setEmail(filas.getString("u.Email"));
+                usuario.setTelefono(filas.getString("u.Telefono"));
+                usuario.setSaldo(filas.getDouble("u.Saldo"));
+                usuario.setIDGrupoUsuarioFK(grupo);
                 
                 resUsuarios.add(usuario);
             }
@@ -209,7 +216,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             sentencia.close();
         } catch (SQLException ex) {
             results.put("STATE", "EXCEPTION");
-            results.put("MESSAGE", "No se pudo obtener la lista de equipos");
+            results.put("MESSAGE", "No se pudo obtener la lista de usuarios");
             results.put("EXCEPTION_MESSAGE", ex.getMessage());
         }
 
@@ -270,6 +277,7 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
                 tarifa.setPrecioporhora(resultado.getDouble("t.Precio_por_hora"));
                 
                 GruposUsuarios grupo = new GruposUsuarios();
+                grupo.setIDGrupoUsuarios(resultado.getInt("g.ID_Grupo_Usuarios"));
                 grupo.setNombre(resultado.getString("g.Nombre"));
                 grupo.setIDTarifaFK(tarifa);
                 
@@ -330,18 +338,46 @@ public class SqlDbUsuarioImpl implements UsuarioDAO {
             if (filas > 0) {
                 results.put("STATE", "SUCCESS");
                 results.put("MESSAGE", "Usuario Actualizado");
-                results.put("APODO", usuario.getApodo());
             } else {
                 results.put("STATE", "FAILURE");
                 results.put("MESSAGE", "Usuario no se pudo actualizar");
-                results.put("APODO", usuario.getApodo());
             }
 
             sentencia.close();
         } catch (SQLException ex) {
             results.put("STATE", "EXCEPTION");
             results.put("MESSAGE", "Usuario no se pudo actualizar");
-            results.put("APODO", usuario.getApodo());
+            results.put("EXCEPTION_MESSAGE", ex.getMessage());
+        }
+
+        return results;
+    }
+
+    @Override
+    public Map<String, String> eliminar(Usuarios usuario) {
+        Map<String, String> results = new HashMap<>();
+
+        PreparedStatement sentencia;
+
+        try {
+            sentencia = conexion.prepareStatement(SQL_DELETE);
+            
+            sentencia.setInt(1, usuario.getIDUsuario());
+
+            Integer filas = sentencia.executeUpdate();
+            
+            if (filas > 0) {
+                results.put("STATE", "SUCCESS");
+                results.put("MESSAGE", "Usuario eliminado");
+            } else {
+                results.put("STATE", "FAILURE");
+                results.put("MESSAGE", "Usuario no se pudo eliminar");
+            }
+
+            sentencia.close();
+        } catch (SQLException ex) {
+            results.put("STATE", "EXCEPTION");
+            results.put("MESSAGE", "Usuario no se pudo eliminar");
             results.put("EXCEPTION_MESSAGE", ex.getMessage());
         }
 

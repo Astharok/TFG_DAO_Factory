@@ -62,4 +62,12 @@ public interface UsuarioDAO {
     */
     public Map<String, String> editarUsuario(Usuarios usuario);
     
+    /**
+    * Elimina el usuario
+    *
+     * @param usuario
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> eliminar(Usuarios usuario);
+    
 }

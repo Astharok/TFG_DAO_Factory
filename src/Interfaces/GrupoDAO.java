@@ -31,12 +31,59 @@ public interface GrupoDAO {
     public Map<String, String> findall();
 
     /**
-    * Actualiza la tarifa de un grupo en la base de datos
+    * Inserta el grupo en la base de datos
     *
      * @param grupo
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> insertaGrupo(GruposUsuarios grupo);
+
+    /**
+    * Actualiza el grupo en la base de datos
+    *
+     * @param grupo
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> updateGrupo(GruposUsuarios grupo);
+
+    /**
+    * Inserta la tarifa en la base de datos
+    *
      * @param tarifa
     * @return Map<String, String> Mapa JSON con respuestas a la peticion.
     */
-    public Map<String, String> updateTarifa(GruposUsuarios grupo, Tarifas tarifa);
+    public Map<String, String> insertaTarifa(Tarifas tarifa);
+    
+    /**
+    * Actualiza la tarifa en la base de datos
+    *
+     * @param tarifa
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> updateTarifa(Tarifas tarifa);
+
+    /**
+    * Recupera la tarifa de la base de datos
+    *
+     * @param tarifa
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> findTarifa(Tarifas tarifa);
+    
+    /**
+    * Elimina el grupo de la base de datos
+    *
+     * @param grupo
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> eliminarGrupo(GruposUsuarios grupo);
+    
+    /**
+    * Elimina la tarifa de la base de datos
+    *
+     * @param tarifa
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> eliminarTarifa(Tarifas tarifa);
     
 }

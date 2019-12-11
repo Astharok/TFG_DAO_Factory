@@ -41,6 +41,8 @@ public class SqlDbEquipoImpl implements EquipoDAO {
         + "Fecha_Fin = CURRENT_TIMESTAMP()"
         + "WHERE ID_Historial_Equipo = ?";
         
+        private final String SQL_DELETE = "DELETE FROM Equipos WHERE ID_Equipo = ?";
+        
     Connection conexion;
 
     public SqlDbEquipoImpl() {
@@ -156,6 +158,37 @@ public class SqlDbEquipoImpl implements EquipoDAO {
         } catch (SQLException ex) {
             results.put("STATE", "EXCEPTION");
             results.put("MESSAGE", "Equipo no se pudo desactivar");
+            results.put("EXCEPTION_MESSAGE", ex.getMessage());
+        }
+
+        return results;
+    }
+
+    @Override
+    public Map<String, String> eliminar(Equipos equipo) {
+        Map<String, String> results = new HashMap<>();
+
+        PreparedStatement sentencia;
+
+        try {
+            sentencia = conexion.prepareStatement(SQL_DELETE);
+            
+            sentencia.setInt(1, equipo.getIDEquipo());
+
+            Integer filas = sentencia.executeUpdate();
+            
+            if (filas > 0) {
+                results.put("STATE", "SUCCESS");
+                results.put("MESSAGE", "Equipo eliminado");
+            } else {
+                results.put("STATE", "FAILURE");
+                results.put("MESSAGE", "Equipo no se pudo eliminar");
+            }
+
+            sentencia.close();
+        } catch (SQLException ex) {
+            results.put("STATE", "EXCEPTION");
+            results.put("MESSAGE", "Equipo no se pudo eliminar");
             results.put("EXCEPTION_MESSAGE", ex.getMessage());
         }
 

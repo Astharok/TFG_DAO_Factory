@@ -40,4 +40,12 @@ public interface EquipoDAO {
     */
     public Map<String, String> desactivar(HistorialesEquipos historial);
     
+    /**
+    * Elimina el equipo de la base de datos
+    *
+     * @param equipo
+    * @return Map<String, String> Mapa JSON con respuestas a la peticion.
+    */
+    public Map<String, String> eliminar(Equipos equipo);
+    
 }
